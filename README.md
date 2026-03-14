@@ -1,10 +1,8 @@
 # singbox-exporter
-singbox-exporter
+
 
 <img src="sing-box-1773515138940.png" width="800">
-def
 
-# singbox-exporter
 
 Prometheus exporter for [sing-box](https://sing-box.sagernet.org/) via Clash-compatible API.
 
