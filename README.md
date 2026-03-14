@@ -8,6 +8,16 @@ Prometheus exporter for [sing-box](https://sing-box.sagernet.org/) via Clash-com
 
 Collects metrics and structured connection logs from sing-box and exposes them for scraping.
 
+
+
+
+| Алерт | Условие | Severity |
+|---|---|---|
+| `ProxyDown` | `singbox_proxy_up == 0` | critical |
+| `ProxyHighLatency` | `150 < latency <= 400` | warning |
+| `ProxyCriticalLatency` | `400 < latency <= 500` | critical |
+| `ProxyUnreachable` | `latency == -1` | critical |
+| `SingboxScrapeFailed` | `singbox_scrape_success == 0` | warning |
 ---
 
 ## Features
