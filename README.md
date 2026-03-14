@@ -44,7 +44,7 @@ Collects metrics and structured connection logs from sing-box and exposes them f
 ## Quick start
 
 ```bash
-git clone https://github.com/youruser/singbox-exporter
+git clone https://github.com/Pushkinmazila2/singbox-exporter
 cd singbox-exporter
 
 # Edit docker-compose.yml — set CLASH_API_SECRET
