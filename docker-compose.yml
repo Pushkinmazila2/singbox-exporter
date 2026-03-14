@@ -6,6 +6,6 @@ services:
     network_mode: host
     environment:
       - CLASH_API_URL=http://127.0.0.1:9090
-      - CLASH_API_SECRET=cfifcfif
+      - CLASH_API_SECRET=password
       - EXPORTER_PORT=9101
       - SCRAPE_INTERVAL=15
