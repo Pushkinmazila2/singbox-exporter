@@ -1,1 +1,409 @@
-
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "orgId": 1,
+      "name": "singbox",
+      "folder": "sing-box",
+      "interval": "1m",
+      "rules": [
+        {
+          "uid": "singbox-proxy-down",
+          "title": "Proxy Down",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "${DS_PROMETHEUS}",
+              "model": {
+                "expr": "singbox_proxy_up == 0",
+                "instant": true,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "-100",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "A"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "refId": "C",
+                "type": "classic_conditions"
+              }
+            }
+          ],
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "1m",
+          "annotations": {
+            "summary": "Proxy {{ $labels.proxy }} is DOWN",
+            "description": "Proxy {{ $labels.proxy }} ({{ $labels.type }}) has been unreachable for more than 1 minute."
+          },
+          "labels": {
+            "severity": "critical",
+            "service": "singbox"
+          },
+          "isPaused": false
+        },
+        {
+          "uid": "singbox-proxy-unreachable",
+          "title": "Proxy Unreachable",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "${DS_PROMETHEUS}",
+              "model": {
+                "expr": "singbox_proxy_latency_ms == -1",
+                "instant": true,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "-100",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "A"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "refId": "C",
+                "type": "classic_conditions"
+              }
+            }
+          ],
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "1m",
+          "annotations": {
+            "summary": "Proxy {{ $labels.proxy }} is UNREACHABLE",
+            "description": "Delay check for proxy {{ $labels.proxy }} ({{ $labels.type }}) returned -1 — connection failed."
+          },
+          "labels": {
+            "severity": "critical",
+            "service": "singbox"
+          },
+          "isPaused": false
+        },
+        {
+          "uid": "singbox-proxy-high-latency",
+          "title": "Proxy High Latency",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "${DS_PROMETHEUS}",
+              "model": {
+                "expr": "singbox_proxy_latency_ms > 150 and singbox_proxy_latency_ms <= 400",
+                "instant": true,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "-100",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "A"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "refId": "C",
+                "type": "classic_conditions"
+              }
+            }
+          ],
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "2m",
+          "annotations": {
+            "summary": "Proxy {{ $labels.proxy }} high latency: {{ $values.A }}ms",
+            "description": "Proxy {{ $labels.proxy }} ({{ $labels.type }}) latency is {{ $values.A }}ms — above 150ms threshold."
+          },
+          "labels": {
+            "severity": "warning",
+            "service": "singbox"
+          },
+          "isPaused": false
+        },
+        {
+          "uid": "singbox-proxy-critical-latency",
+          "title": "Proxy Critical Latency",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "${DS_PROMETHEUS}",
+              "model": {
+                "expr": "singbox_proxy_latency_ms > 400 and singbox_proxy_latency_ms <= 500",
+                "instant": true,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "-100",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "A"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "refId": "C",
+                "type": "classic_conditions"
+              }
+            }
+          ],
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "1m",
+          "annotations": {
+            "summary": "Proxy {{ $labels.proxy }} critical latency: {{ $values.A }}ms",
+            "description": "Proxy {{ $labels.proxy }} ({{ $labels.type }}) latency is {{ $values.A }}ms — above 400ms critical threshold."
+          },
+          "labels": {
+            "severity": "critical",
+            "service": "singbox"
+          },
+          "isPaused": false
+        },
+        {
+          "uid": "singbox-proxy-dead-latency",
+          "title": "Proxy Dead Latency",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "${DS_PROMETHEUS}",
+              "model": {
+                "expr": "singbox_proxy_latency_ms > 500",
+                "instant": true,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "-100",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "A"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "refId": "C",
+                "type": "classic_conditions"
+              }
+            }
+          ],
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "1m",
+          "annotations": {
+            "summary": "Proxy {{ $labels.proxy }} latency DEAD ZONE: {{ $values.A }}ms",
+            "description": "Proxy {{ $labels.proxy }} ({{ $labels.type }}) latency exceeded 500ms — connection is effectively dead."
+          },
+          "labels": {
+            "severity": "critical",
+            "service": "singbox"
+          },
+          "isPaused": false
+        },
+        {
+          "uid": "singbox-scrape-failed",
+          "title": "sing-box Scrape Failed",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "${DS_PROMETHEUS}",
+              "model": {
+                "expr": "singbox_scrape_success == 0",
+                "instant": true,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "-100",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "A"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "refId": "C",
+                "type": "classic_conditions"
+              }
+            }
+          ],
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "2m",
+          "annotations": {
+            "summary": "sing-box exporter scrape failed: {{ $labels.endpoint }}",
+            "description": "Endpoint {{ $labels.endpoint }} has been failing for more than 2 minutes. sing-box may be down or Clash API unreachable."
+          },
+          "labels": {
+            "severity": "warning",
+            "service": "singbox"
+          },
+          "isPaused": false
+        }
+      ]
+    }
+  ]
+}
