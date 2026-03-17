@@ -1,0 +1,109 @@
+// ── Prometheus metrics ────────────────────────────────────────────────────────
+
+prometheus.scrape "singbox" {
+  targets = [
+    { "__address__" = "127.0.0.1:9101" },
+  ]
+  scrape_interval = "15s"
+  forward_to      = [prometheus.remote_write.grafana_cloud.receiver]
+}
+
+prometheus.remote_write "grafana_cloud" {
+  endpoint {
+    url = env("GCLOUD_HOSTED_METRICS_URL")
+
+    basic_auth {
+      username = env("GCLOUD_HOSTED_METRICS_ID")
+      password = env("GCLOUD_RW_API_KEY")
+    }
+  }
+}
+
+// ── Loki logs ─────────────────────────────────────────────────────────────────
+
+discovery.docker "singbox_exporter" {
+  host = "unix:///var/run/docker.sock"
+
+  filter {
+    name   = "name"
+    values = ["singbox-exporter"]
+  }
+}
+
+loki.relabel "singbox_container" {
+  forward_to = []
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    target_label  = "container"
+  }
+}
+
+loki.source.docker "singbox_exporter" {
+  host          = "unix:///var/run/docker.sock"
+  targets       = discovery.docker.singbox_exporter.targets
+  forward_to    = [loki.process.singbox_logs.receiver]
+  relabel_rules = loki.relabel.singbox_container.rules
+}
+
+loki.process "singbox_logs" {
+  forward_to = [loki.write.grafana_cloud.receiver]
+
+  // Parse JSON fields from singbox-exporter connection log lines
+  stage.json {
+    expressions = {
+      inbound_protocol = "inbound_protocol",
+      inbound_tag      = "inbound_tag",
+      outbound         = "outbound",
+      rule_outbound    = "rule_outbound",
+      network          = "network",
+      detected_level   = "detected_level",
+      source_ip        = "source_ip",
+      host             = "host",
+      upload_bytes     = "upload_bytes",
+      download_bytes   = "download_bytes",
+      message          = "message",
+      ts               = "ts",
+    }
+  }
+
+  // Low-cardinality fields → Loki stream labels
+  stage.labels {
+    values = {
+      outbound         = "outbound",
+      rule_outbound    = "rule_outbound",
+      network          = "network",
+      inbound_tag      = "inbound_tag",
+      host             = "host",
+    }
+  }
+
+  // Map detected_level to Loki log level
+  stage.structured_metadata {
+    values = {
+      detected_level = "detected_level",
+    }
+  }
+
+  // Use connection start time as log timestamp
+  stage.timestamp {
+    source = "ts"
+    format = "RFC3339Nano"
+  }
+
+  // Human-readable line in Grafana Explore
+  stage.output {
+    source = "message"
+  }
+}
+
+loki.write "grafana_cloud" {
+  endpoint {
+    url = env("GCLOUD_HOSTED_LOGS_URL")
+
+    basic_auth {
+      username = env("GCLOUD_HOSTED_LOGS_ID")
+      password = env("GCLOUD_RW_API_KEY")
+    }
+  }
+}
