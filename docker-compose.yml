@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     network_mode: host
     environment:
-      - CLASH_API_URL=http://127.0.0.1:9090
-      - CLASH_API_SECRET=password
+      - CLASH_API_URL=${CLASH_API_URL_1}
+      - CLASH_API_SECRET=${CLASH_API_SECRET_1}
       - EXPORTER_PORT=9101
       - SCRAPE_INTERVAL=15
