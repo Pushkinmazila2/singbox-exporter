@@ -11,7 +11,7 @@ services:
     ports:
       - "127.0.0.1:${EXPORTER_PORT:-9091}:${EXPORTER_PORT:-9091}"
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:$$EXPORTER_PORT/metrics | grep -q 'HELP singbox_info' || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:$$EXPORTER_PORT/metrics | grep '^singbox_info '"]
       interval: 10s
       timeout: 5s
       retries: 3
