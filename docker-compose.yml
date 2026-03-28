@@ -10,7 +10,7 @@ services:
       - EXPORTER_PORT=${EXPORTER_PORT:9091}
       - SCRAPE_INTERVAL=15
     ports:
-      - "127.0.0.1:EXPORTER_PORT:EXPORTER_PORT"
+      - "127.0.0.1:${EXPORTER_PORT}:${EXPORTER_PORT}"
     healthcheck:
       test: ["CMD-SHELL", "curl http://127.0.0.1:$$EXPORTER_PORT | grep -q 'HELP singbox_info sing-box version and build info'"]
       interval: 10s
