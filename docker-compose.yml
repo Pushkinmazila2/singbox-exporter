@@ -9,3 +9,11 @@ services:
       - CLASH_API_SECRET=${CLASH_API_SECRET}
       - EXPORTER_PORT=9101
       - SCRAPE_INTERVAL=15
+    ports:
+      - "127.0.0.1:${EXPORTER_PORT}:${EXPORTER_PORT}"
+    healthcheck:
+      # Важно: внутри CMD-SHELL используем $$ для обращения к переменной контейнера
+      test: ["CMD-SHELL", "curl -s -x http://127.0.0.1::$$EXPORTER_PORT ifconfig.me| grep -q 'HELP singbox_info sing-box version and build info'"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
