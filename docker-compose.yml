@@ -4,7 +4,7 @@ services:
     container_name: singbox-exporter
     restart: unless-stopped
     environment:
-      - CLASH_API_URL=${CLASH_API_URL:-http://127.0.0.1:9090}
+      - CLASH_API_URL=${CLASH_API_URL:-http://s-ui:9090}
       - CLASH_API_SECRET=${CLASH_API_SECRET}
       - EXPORTER_PORT=${EXPORTER_PORT:-9091}
       - SCRAPE_INTERVAL=15
